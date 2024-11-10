@@ -71,6 +71,14 @@ typedef size_t vec_type_t;
 #define vector_insert(vec_addr, pos, value)\
 	(*vector_insert_dst(vec_addr, pos) = value)
 
+#define vector_add_unique(vec_addr, value, cmp_func) \
+    do { \
+        typeof(**vec_addr) _tmp_value = value; \
+        if (!_vector_contains(*vec_addr, sizeof(_tmp_value), &_tmp_value, cmp_func)) { \
+            vector_add(vec_addr, _tmp_value); \
+        } \
+    } while (0)
+
 #else
 
 #define vector_add_dst(vec_addr, type)\
@@ -82,6 +90,14 @@ typedef size_t vec_type_t;
 	(*vector_add_dst(vec_addr, type) = value)
 #define vector_insert(vec_addr, type, pos, value)\
 	(*vector_insert_dst(vec_addr, type, pos) = value)
+
+#define vector_add_unique(vec_addr, value, cmp_func) \
+    do { \
+        typeof(**vec_addr) _tmp_value = value; \
+        if (!_vector_contains(*vec_addr, sizeof(_tmp_value), &_tmp_value, cmp_func)) { \
+            vector_add(vec_addr, _tmp_value); \
+        } \
+    } while (0)
 
 #endif
 
@@ -114,6 +130,8 @@ void vector_pop(vector vec);
 void _vector_reserve(vector* vec_addr, vec_type_t type_size, vec_size_t capacity);
 
 vector _vector_copy(vector vec, vec_type_t type_size);
+
+bool _vector_contains(vector vec, vec_type_t type_size, const void* value, bool (*cmp)(const void*, const void*));
 
 vec_size_t vector_size(vector vec);
 
