@@ -42,6 +42,16 @@ typedef struct
 
 vector_header* vector_get_header(vector vec) { return &((vector_header*)vec)[-1]; }
 
+bool _vector_contains(vector vec, vec_type_t type_size, const void* value, bool (*cmp)(const void*, const void*)) {
+	vector_header* h = vector_get_header(vec);
+	for (vec_size_t i = 0; i < h->size; ++i) {
+		if (cmp(value, &h->data[i * type_size])) {
+			return true;
+		}
+	}
+	return false;
+}
+
 vector vector_create(void)
 {
 	vector_header* h = (vector_header*)malloc(sizeof(vector_header));
